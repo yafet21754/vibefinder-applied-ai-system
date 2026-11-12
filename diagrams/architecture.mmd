@@ -1,0 +1,11 @@
+flowchart TD
+    Input["Listener preferences and constraints"] --> Validate["Validate request"]
+    Catalog["Validated synthetic CSV catalog"] --> Filter["Filter BPM, genre and exclusions"]
+    Validate --> Filter
+    Filter --> Rank["Score and limit artist repetition"]
+    Rank --> Verify["Verify catalog membership and constraints"]
+    Verify -->|Pass| Output["Playlist, explanations and warnings"]
+    Verify -->|Fail| Block["Withhold results"]
+    Output --> Human["Listener reviews and revises preferences"]
+    Human --> Input
+    Tests["Evaluation cases and fault injection"] --> Verify

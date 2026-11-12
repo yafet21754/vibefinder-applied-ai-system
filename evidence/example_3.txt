@@ -1,0 +1,30 @@
+$ python -m src.app --genre opera --mood calm --energy 0.2 --strict-genre
+{
+  "status": "no_matches",
+  "items": [],
+  "warnings": [
+    "No requested-genre matches within constraints; review alternatives or change the request.",
+    "Too few eligible tracks; constraints were not relaxed."
+  ],
+  "trace": [
+    {
+      "step": "validate",
+      "status": "pass"
+    },
+    {
+      "step": "filter",
+      "candidates": 0,
+      "catalog_size": 20
+    },
+    {
+      "step": "rank_and_diversify",
+      "selected": 0
+    },
+    {
+      "step": "verify",
+      "status": "pass",
+      "errors": []
+    }
+  ]
+}
+Exit code: 0

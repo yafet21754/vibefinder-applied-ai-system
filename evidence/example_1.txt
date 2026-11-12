@@ -1,0 +1,60 @@
+$ python -m src.app --genre lofi --mood chill --energy 0.35 --count 2
+{
+  "status": "ok",
+  "items": [
+    {
+      "song": {
+        "id": 4,
+        "tempo_bpm": 72.0,
+        "artist": "Paper Lanterns",
+        "genre": "lofi",
+        "mood": "chill",
+        "title": "Library Rain",
+        "danceability": 0.58,
+        "energy": 0.35,
+        "valence": 0.6,
+        "acousticness": 0.86
+      },
+      "score": 4.0,
+      "reason": "genre match (+2.00); mood match (+1.00); energy similarity 1.00 (+1.00)"
+    },
+    {
+      "song": {
+        "id": 2,
+        "tempo_bpm": 78.0,
+        "artist": "LoRoom",
+        "genre": "lofi",
+        "mood": "chill",
+        "title": "Midnight Coding",
+        "danceability": 0.62,
+        "energy": 0.42,
+        "valence": 0.56,
+        "acousticness": 0.71
+      },
+      "score": 3.9299999999999997,
+      "reason": "genre match (+2.00); mood match (+1.00); energy similarity 0.93 (+0.93)"
+    }
+  ],
+  "warnings": [],
+  "trace": [
+    {
+      "step": "validate",
+      "status": "pass"
+    },
+    {
+      "step": "filter",
+      "candidates": 20,
+      "catalog_size": 20
+    },
+    {
+      "step": "rank_and_diversify",
+      "selected": 2
+    },
+    {
+      "step": "verify",
+      "status": "pass",
+      "errors": []
+    }
+  ]
+}
+Exit code: 0

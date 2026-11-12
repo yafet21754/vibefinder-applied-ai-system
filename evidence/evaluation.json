@@ -1,0 +1,61 @@
+{
+  "passed": 12,
+  "total": 12,
+  "cases": [
+    {
+      "case": "exact preference winner",
+      "pass": true,
+      "status": "ok"
+    },
+    {
+      "case": "BPM hard limit",
+      "pass": true,
+      "status": "ok"
+    },
+    {
+      "case": "excluded winner",
+      "pass": true,
+      "status": "ok"
+    },
+    {
+      "case": "strict unseen genre",
+      "pass": true,
+      "status": "no_matches"
+    },
+    {
+      "case": "fallback transparency",
+      "pass": true,
+      "status": "ok"
+    },
+    {
+      "case": "artist diversity",
+      "pass": true,
+      "status": "ok"
+    },
+    {
+      "case": "sparse genre",
+      "pass": true,
+      "status": "ok"
+    },
+    {
+      "case": "invalid energy -1",
+      "pass": true
+    },
+    {
+      "case": "invalid energy nan",
+      "pass": true
+    },
+    {
+      "case": "invalid energy inf",
+      "pass": true
+    },
+    {
+      "case": "verification failure withholds output",
+      "pass": true
+    },
+    {
+      "case": "repeatability",
+      "pass": true
+    }
+  ]
+}

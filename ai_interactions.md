@@ -1,17 +1,20 @@
-# AI Assistance Record
+# AI collaboration and implementation record
 
-## Agentic Workflow
+The user supplied the Applied AI System assignment and instructed ChatGPT to start. The assistant inspected accessible GitHub repositories and found a completed Module 3 VibeFinder project. It cloned that project and preserved its documentation and history.
 
-The student supplied the assignment instructions and repository, then asked: “yes build it” with the GitHub repository link. ChatGPT inspected the starter, implemented the project, generated ten synthetic songs, ran the CLI for five profiles and a weight experiment, and prepared documentation and automated checks.
+## Observable workflow
+1. Inspect the original implementation and synthetic catalog.
+2. Select the confirmed Module 3 base rather than assume the NotebookLM Career Coach was a qualifying submission.
+3. Implement explicit request validation, hard filters, ranking, artist limits, and an output verifier.
+4. Run original and new unit tests, a behavioral harness, and actual CLI examples.
+5. Capture command output, document limitations, and package the result.
 
-Files changed: `src/recommender.py`, `src/main.py`, `src/__init__.py`, `data/songs.csv`, `tests/test_recommender.py`, `README.md`, `model_card.md`, `requirements.txt`, and this log.
+This log is a concise record of actions and design decisions, not private chain-of-thought. The application emits operational traces in each JSON response. No autonomous tool-calling agent or agentic stretch credit is claimed.
 
-The implementation keeps both starter interfaces and shares one scoring rule. It fixes the package import for `python -m src.main`. The experiment halves genre weight and doubles energy weight without changing the baseline.
+## Evidence
+- `evidence/example_1.txt` through `example_4.txt`: actual CLI inputs, outputs and exit codes.
+- `evidence/evaluation.json`: structured results for 12 behavioral cases.
+- `evidence/tests.txt`: actual test-suite summary.
 
-## Verification and Human Review
-
-The agent checked actual terminal output, score calculations, interface consistency, and the automated test suite. These are agent-run checks, not claims that the student manually tested or listened to the fictional tracks. The student should run the project, inspect explanations, and revise the personal reflection to match their actual experience. No separate student chat sessions or manual review are claimed.
-
-## Design Choice
-
-The existing Recommender class adapts Song and UserProfile objects to the functional scoring API. This avoids duplicated formulas. No additional design-pattern stretch credit is claimed.
+## Human review still needed
+The student must run a demo, inspect explanations, and complete the personal collaboration reflection in model_card.md. Assistant-run checks are not represented as student evaluation. A presentation outline is supplied; a presentation delivery has not occurred.

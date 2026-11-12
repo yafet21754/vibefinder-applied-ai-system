@@ -1,0 +1,3 @@
+$ python -m src.app --genre pop --mood happy --energy nan
+{"status": "error", "message": "energy must be a finite number"}
+Exit code: 2

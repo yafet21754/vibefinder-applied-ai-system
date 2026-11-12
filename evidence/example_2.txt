@@ -1,0 +1,46 @@
+$ python -m src.app --genre house --mood euphoric --energy 0.88 --min-bpm 120 --max-bpm 135 --strict-genre --count 2
+{
+  "status": "ok",
+  "items": [
+    {
+      "song": {
+        "danceability": 0.96,
+        "mood": "euphoric",
+        "id": 19,
+        "energy": 0.88,
+        "acousticness": 0.04,
+        "valence": 0.86,
+        "genre": "house",
+        "artist": "Coastline Circuit",
+        "tempo_bpm": 128.0,
+        "title": "Afterglow Floor"
+      },
+      "score": 4.0,
+      "reason": "genre match (+2.00); mood match (+1.00); energy similarity 1.00 (+1.00)"
+    }
+  ],
+  "warnings": [
+    "Too few eligible tracks; constraints were not relaxed."
+  ],
+  "trace": [
+    {
+      "step": "validate",
+      "status": "pass"
+    },
+    {
+      "step": "filter",
+      "candidates": 1,
+      "catalog_size": 20
+    },
+    {
+      "step": "rank_and_diversify",
+      "selected": 1
+    },
+    {
+      "step": "verify",
+      "status": "pass",
+      "errors": []
+    }
+  ]
+}
+Exit code: 0

@@ -1,154 +1,329 @@
-# VibeFinder 1.0 — Music Recommender Simulation
+# VibeFinder 2.0 — Verified Playlist Builder
 
-## Project Summary
+A Python music recommendation system that turns a listener's preferences into an explainable playlist while enforcing tempo, exclusion, and artist-repetition constraints. It verifies results before releasing them and abstains when constraints leave no matches.
 
-VibeFinder is a CLI-first Python simulation that ranks a catalog of 20 songs against a listener's taste profile. Each result includes its score and the reasons for that score. It is a fixed-rule content-based recommender, with no trained machine-learning model or real listening history.
+## Original project and extension
 
-## How The System Works
+Base project: [VibeFinder 1.0 — Module 3 Music Recommender Simulation](https://github.com/yafet21754/ai110-module3show-musicrecommendersimulation-starter), commit `2ee57506bd5f88c2f6e25580284232ae88596404`.
+The original CLI ranked 20 synthetic songs using genre, mood, and energy, explained scores, and compared weighting recipes. It did not enforce playlist constraints or gate outputs through a verifier.
+Original documentation is preserved in `docs/module3_README.md`, `docs/module3_model_card.md`, and `docs/module3_ai_interactions.md`; original implementation and tests remain available.
 
-Real recommendation systems can use collaborative filtering to find patterns across users' behavior, while content-based filtering compares item attributes to a user's interests. Likes, skips, playlists, and listening histories describe behavior; genre, mood, energy, and tempo describe music. YouTube's published 2016 architecture illustrates two stages: candidate generation followed by ranking. This project uses explicit genre, mood, and energy preferences and scores the entire tiny catalog, so it needs no candidate-generation stage.
+The integrated advanced feature is a **reliability/testing system**: every application run checks catalog membership, score/explanation consistency, BPM bounds, exclusions, duplicate songs, artist limits, and score order. Failed verification withholds the playlist. An independent behavioral evaluation script exercises the same application logic.
 
-Sources: [Google's collaborative-filtering guide](https://developers.google.com/machine-learning/recommendation/collaborative/basics), [Google Research: content-based recommendations](https://research.google/pubs/content-based-related-video-recommendations/), and [YouTube recommendation architecture, 2016](https://research.google/pubs/deep-neural-networks-for-youtube-recommendations/). These sources explain concepts; this project does not reproduce a production platform.
+This is a fixed-rule, content-based AI simulation. It has no trained model, LLM, external API, RAG, or autonomous tool-calling agent. We do not claim those capabilities or stretch points for them.
 
-### Data and taste profiles
+## Architecture
 
-- `Song`: `id`, `title`, `artist`, `genre`, `mood`, `energy`, `tempo_bpm`, `valence`, `danceability`, and `acousticness`.
-- `UserProfile`: `favorite_genre`, `favorite_mood`, `target_energy`, and `likes_acoustic`.
-- The CLI uses dictionaries with `genre`, `mood`, and `energy`. The scorer also accepts the longer UserProfile names. `likes_acoustic` is optional in dictionaries.
-- Tempo, valence, and danceability are loaded for future work but do not affect the current score. Acousticness affects it only when `likes_acoustic` is supplied.
+Editable source: [diagrams/architecture.mmd](diagrams/architecture.mmd).
 
-The default profile is happy pop with target energy 0.8. Genre plus mood separates intense rock from chill lofi, and target energy distinguishes tracks within those categories. One favorite genre is still a narrow view of taste. Unknown genres receive no genre points; the remaining features still produce a ranking.
+1. Validate preferences and numerical bounds.
+2. Load validated song metadata and filter hard constraints.
+3. Rank with the original scoring function; greedily enforce artist limits.
+4. Recheck output integrity and constraints; block failures.
+5. Return explanations, warnings, and a concise operational trace for human review.
 
-### Algorithm Recipe
+The trace records operations and counts, not hidden model reasoning. Human-in-the-loop review means the listener checks the result and changes preferences; it does not imply that a human has evaluated these fictional tracks.
 
-For each song:
+## Setup
 
-1. Add **2.0** points for an exact genre match (ignoring case and surrounding whitespace).
-2. Add **1.0** point for a mood match.
-3. Add **1 − abs(song energy − target energy)** points. Closer energy earns more, regardless of whether it is higher or lower.
-4. If acoustic preference is supplied, add **0.5 × acousticness** when true or **0.5 × (1 − acousticness)** when false.
-
-The core score ranges from 0 to 4; the optional acoustic contribution raises the maximum to 4.5. It is a relevance score, not a probability. Explanations list the actual contributions.
-
-The scoring rule judges one song. The ranking rule sorts all scored songs from highest to lowest and returns the first k. Ties preserve CSV order. `sorted()` creates a new list; `.sort()` changes a list in place and returns None. The original catalog is not reordered.
-
-Data flow: CSV → typed song dictionaries; user preferences + each song → score and reasons; all scores → descending ranking → top five.
-
-Genre receives the largest weight to prioritize a listener's named style. This choice can hide songs with a better mood match, so the evaluation also tests a less genre-heavy recipe.
-
-## Getting Started
-
-Run commands from the repository root. Python 3.9+ is recommended. The CLI uses only Python's standard library.
+Python 3.10+; verified with Python 3.12. The application and evaluation harness need only the standard library. pytest is the development dependency.
 
 ```bash
 python3 -m venv .venv
 source .venv/bin/activate
 python -m pip install -r requirements.txt
-python -m src.main
-```
-
-On Windows PowerShell, activate with `.\.venv\Scripts\Activate.ps1`.
-
-Run a single profile or repeat the experiment:
-
-```bash
-python -m src.main --profile "High-Energy Pop"
-python -m src.main --experiment
+python -m src.app --genre lofi --mood chill --energy 0.35
+python -m src.evaluate
 python -m pytest -q
 ```
 
-## Project Structure
+Windows activation: `.\.venv\Scripts\Activate.ps1`.
+Run from the project root. The catalog path is resolved relative to the package, rather than the current working directory.
 
-| File | Purpose |
-| --- | --- |
-| `data/songs.csv` | Original 10 songs plus 10 synthetic additions |
-| `src/recommender.py` | CSV validation, shared scoring, ranking, and class adapters |
-| `src/main.py` | Five profiles and repeatable weight experiment |
-| `tests/test_recommender.py` | Starter tests and scoring, validation, and ranking checks |
-| `model_card.md` | Data, evaluation, bias, future work, and reflection draft |
-| `ai_interactions.md` | Honest record of AI assistance and review still needed |
+Optional controls: `--count 3`, `--min-bpm 100 --max-bpm 140`, `--exclude 1 5`, `--max-per-artist 2`, `--strict-genre`, `--catalog data/songs.csv`, `--log run.jsonl`. Local logs omit user preference text; do not commit private logs. Failure to write a requested log is an explicit error.
 
-## Sample Recommendation Output
+Exit codes: 0 = successful run, including honest no-match results; 1 = verification blocked output; 2 = invalid input or file error.
 
-Actual baseline output from `python -m src.main`:
+## Reproducible execution evidence
 
-```text
-Loaded songs: 20
-Weights: genre=2.0, mood=1.0, energy=1.0
+These are actual executions captured during development, not invented examples. Complete logs are committed in `evidence/`.
 
-Profile: High-Energy Pop | {'genre': 'pop', 'mood': 'happy', 'energy': 0.8}
-1. Sunrise City - Score: 3.98
-   Because: genre match (+2.00); mood match (+1.00); energy similarity 0.98 (+0.98)
-2. Gym Hero - Score: 2.87
-   Because: genre match (+2.00); energy similarity 0.87 (+0.87)
-3. Rooftop Lights - Score: 1.96
-   Because: mood match (+1.00); energy similarity 0.96 (+0.96)
-4. City Verse - Score: 1.00
-   Because: energy similarity 1.00 (+1.00)
-5. Desert Steps - Score: 0.95
-   Because: energy similarity 0.95 (+0.95)
+### Example 1
 
-Profile: Chill Lofi | {'genre': 'lofi', 'mood': 'chill', 'energy': 0.35}
-1. Library Rain - Score: 4.00
-   Because: genre match (+2.00); mood match (+1.00); energy similarity 1.00 (+1.00)
-2. Midnight Coding - Score: 3.93
-   Because: genre match (+2.00); mood match (+1.00); energy similarity 0.93 (+0.93)
-3. Focus Flow - Score: 2.95
-   Because: genre match (+2.00); energy similarity 0.95 (+0.95)
-4. Spacewalk Thoughts - Score: 1.93
-   Because: mood match (+1.00); energy similarity 0.93 (+0.93)
-5. Coffee Shop Stories - Score: 0.98
-   Because: energy similarity 0.98 (+0.98)
-
-Profile: Deep Intense Rock | {'genre': 'rock', 'mood': 'intense', 'energy': 0.9}
-1. Storm Runner - Score: 3.99
-   Because: genre match (+2.00); mood match (+1.00); energy similarity 0.99 (+0.99)
-2. Gym Hero - Score: 1.97
-   Because: mood match (+1.00); energy similarity 0.97 (+0.97)
-3. Warehouse Dawn - Score: 1.94
-   Because: mood match (+1.00); energy similarity 0.94 (+0.94)
-4. Electric Tears - Score: 1.00
-   Because: energy similarity 1.00 (+1.00)
-5. Afterglow Floor - Score: 0.98
-   Because: energy similarity 0.98 (+0.98)
-
-Profile: Conflicting Sad Pop | {'genre': 'pop', 'mood': 'sad', 'energy': 0.9}
-1. Gym Hero - Score: 2.97
-   Because: genre match (+2.00); energy similarity 0.97 (+0.97)
-2. Sunrise City - Score: 2.92
-   Because: genre match (+2.00); energy similarity 0.92 (+0.92)
-3. Electric Tears - Score: 2.00
-   Because: mood match (+1.00); energy similarity 1.00 (+1.00)
-4. Last Train Home - Score: 1.56
-   Because: mood match (+1.00); energy similarity 0.56 (+0.56)
-5. Blue Porch - Score: 1.40
-   Because: mood match (+1.00); energy similarity 0.40 (+0.40)
-
-Profile: Unseen Genre | {'genre': 'opera', 'mood': 'calm', 'energy': 0.0}
-1. Quiet Strings - Score: 1.82
-   Because: mood match (+1.00); energy similarity 0.82 (+0.82)
-2. Spacewalk Thoughts - Score: 0.72
-   Because: energy similarity 0.72 (+0.72)
-3. Blue Porch - Score: 0.70
-   Because: energy similarity 0.70 (+0.70)
-4. Library Rain - Score: 0.65
-   Because: energy similarity 0.65 (+0.65)
-5. Coffee Shop Stories - Score: 0.63
-   Because: energy similarity 0.63 (+0.63)
+```bash
+python -m src.app --genre lofi --mood chill --energy 0.35 --count 2
 ```
 
-## Experiments You Tried
+```json
+{
+  "status": "ok",
+  "items": [
+    {
+      "song": {
+        "id": 4,
+        "tempo_bpm": 72.0,
+        "artist": "Paper Lanterns",
+        "genre": "lofi",
+        "mood": "chill",
+        "title": "Library Rain",
+        "danceability": 0.58,
+        "energy": 0.35,
+        "valence": 0.6,
+        "acousticness": 0.86
+      },
+      "score": 4.0,
+      "reason": "genre match (+2.00); mood match (+1.00); energy similarity 1.00 (+1.00)"
+    },
+    {
+      "song": {
+        "id": 2,
+        "tempo_bpm": 78.0,
+        "artist": "LoRoom",
+        "genre": "lofi",
+        "mood": "chill",
+        "title": "Midnight Coding",
+        "danceability": 0.62,
+        "energy": 0.42,
+        "valence": 0.56,
+        "acousticness": 0.71
+      },
+      "score": 3.9299999999999997,
+      "reason": "genre match (+2.00); mood match (+1.00); energy similarity 0.93 (+0.93)"
+    }
+  ],
+  "warnings": [],
+  "trace": [
+    {
+      "step": "validate",
+      "status": "pass"
+    },
+    {
+      "step": "filter",
+      "candidates": 20,
+      "catalog_size": 20
+    },
+    {
+      "step": "rank_and_diversify",
+      "selected": 2
+    },
+    {
+      "step": "verify",
+      "status": "pass",
+      "errors": []
+    }
+  ]
+}
+```
 
-`python -m src.main --experiment` halves genre weight from 2.0 to 1.0 and doubles energy weight from 1.0 to 2.0. Mood stays at 1.0. Optional acoustic weighting is unchanged. Both recipes have the same core maximum of 4.0, and the similarity formula still stays between zero and one.
+Exit code: 0.
 
-For happy pop, Rooftop Lights moves above Gym Hero because matching mood and closer energy now beat a genre-only match. For sad pop at energy 0.9, Electric Tears moves from third to first. This better satisfies the stated mood and energy, but no listening ratings establish that it is more accurate. The default recipe remains unchanged; the experiment is an explicit command-line option.
+### Example 2
 
-Full experiment output and profile comparisons appear in the [model card](model_card.md).
+```bash
+python -m src.app --genre house --mood euphoric --energy 0.88 --min-bpm 120 --max-bpm 135 --strict-genre --count 2
+```
 
-## Limitations and Risks
+```json
+{
+  "status": "ok",
+  "items": [
+    {
+      "song": {
+        "danceability": 0.96,
+        "mood": "euphoric",
+        "id": 19,
+        "energy": 0.88,
+        "acousticness": 0.04,
+        "valence": 0.86,
+        "genre": "house",
+        "artist": "Coastline Circuit",
+        "tempo_bpm": 128.0,
+        "title": "Afterglow Floor"
+      },
+      "score": 4.0,
+      "reason": "genre match (+2.00); mood match (+1.00); energy similarity 1.00 (+1.00)"
+    }
+  ],
+  "warnings": [
+    "Too few eligible tracks; constraints were not relaxed."
+  ],
+  "trace": [
+    {
+      "step": "validate",
+      "status": "pass"
+    },
+    {
+      "step": "filter",
+      "candidates": 1,
+      "catalog_size": 20
+    },
+    {
+      "step": "rank_and_diversify",
+      "selected": 1
+    },
+    {
+      "step": "verify",
+      "status": "pass",
+      "errors": []
+    }
+  ]
+}
+```
 
-The catalog is small and uneven. Genre labels match exactly: pop and indie pop are treated differently. Hand-assigned mood and audio attributes simplify musical taste. Strong genre weighting can create a filter bubble. No lyrics, language, listening context, or behavioral feedback are used, and a sparse genre may have only one matching track.
+Exit code: 0.
+
+### Example 3
+
+```bash
+python -m src.app --genre opera --mood calm --energy 0.2 --strict-genre
+```
+
+```json
+{
+  "status": "no_matches",
+  "items": [],
+  "warnings": [
+    "No requested-genre matches within constraints; review alternatives or change the request.",
+    "Too few eligible tracks; constraints were not relaxed."
+  ],
+  "trace": [
+    {
+      "step": "validate",
+      "status": "pass"
+    },
+    {
+      "step": "filter",
+      "candidates": 0,
+      "catalog_size": 20
+    },
+    {
+      "step": "rank_and_diversify",
+      "selected": 0
+    },
+    {
+      "step": "verify",
+      "status": "pass",
+      "errors": []
+    }
+  ]
+}
+```
+
+Exit code: 0.
+
+### Example 4
+
+```bash
+python -m src.app --genre pop --mood happy --energy nan
+```
+
+```json
+{"status": "error", "message": "energy must be a finite number"}
+```
+
+Exit code: 2.
+
+## Reliability results
+
+```bash
+python -m src.evaluate
+```
+
+```json
+{
+  "passed": 12,
+  "total": 12,
+  "cases": [
+    {
+      "case": "exact preference winner",
+      "pass": true,
+      "status": "ok"
+    },
+    {
+      "case": "BPM hard limit",
+      "pass": true,
+      "status": "ok"
+    },
+    {
+      "case": "excluded winner",
+      "pass": true,
+      "status": "ok"
+    },
+    {
+      "case": "strict unseen genre",
+      "pass": true,
+      "status": "no_matches"
+    },
+    {
+      "case": "fallback transparency",
+      "pass": true,
+      "status": "ok"
+    },
+    {
+      "case": "artist diversity",
+      "pass": true,
+      "status": "ok"
+    },
+    {
+      "case": "sparse genre",
+      "pass": true,
+      "status": "ok"
+    },
+    {
+      "case": "invalid energy -1",
+      "pass": true
+    },
+    {
+      "case": "invalid energy nan",
+      "pass": true
+    },
+    {
+      "case": "invalid energy inf",
+      "pass": true
+    },
+    {
+      "case": "verification failure withholds output",
+      "pass": true
+    },
+    {
+      "case": "repeatability",
+      "pass": true
+    }
+  ]
+}
+```
+
+```bash
+python -m pytest -q -p no:anyio
+```
+
+```text
+................................                                         [100%]
+32 passed in 0.23s
+```
+
+The final flag disables an unrelated globally installed pytest plugin for this captured run; it is not needed in a clean virtual environment. The normal pytest run also passed.
+
+Tests include tampered score/catalog output and an injected verifier failure, in addition to the original scoring tests. These checks measure software invariants and deterministic behavior, not whether a listener likes a track. No listener study or production accuracy claim is made.
+
+## Design decisions and trade-offs
+
+- Reuse the Module 3 scorer, keeping its mathematical explanations and baseline comparison intact.
+- Enforce BPM and exclusions before ranking, so a high relevance score cannot override them.
+- Cap artist repetition after ranking. This greedy method is simple and transparent; it does not optimize playlist transitions or sequencing.
+- Use strict-genre abstention when requested. Otherwise alternatives are allowed with an explicit missing-genre warning.
+- Keep the verifier separate from selection. It shares the score formula, so correlated scorer bugs remain possible; independent expected-value unit tests partly address this.
+- Use a deterministic rule system for reproducibility. More elaborate generation would add credentials, cost, and another failure surface without solving the constraint problem.
+
+## Testing summary and limitations
+
+All 32 unit tests and 12 harness cases passed in the development environment. Sparse strict genres yield short playlists rather than fabricated tracks; unseen strict genres produce no matches. An injected verification error withholds all tracks.
+The catalog still contains only 20 fictional teaching records with hand-assigned features. There is no music playback, real catalog search, transition-quality evaluation, learned personalization, or listener ground truth. Similarity scores are not calibrated confidence probabilities. Genre weighting and catalog imbalance still bias exposure.
 
 ## Reflection
 
-The implemented comparison shows that the chosen weights change what counts as a good match. Scores and explanations make that decision visible, but they do not prove that a listener will like a song. See the model card for a personal reflection draft that the student should review and adapt before submission.
+Reliable recommendations require explicit definitions of success: a high matching score alone cannot establish a useful playlist. This extension makes hard requirements visible and checks them before output. The responsible-AI reflection and the AI-collaboration record are in `model_card.md` and `ai_interactions.md`; the student must review the personal sections before submitting.
+
+## Submission status
+
+Implementation, source diagram, tests, execution evidence, and documentation are prepared locally. A public final-project repository has not been created or pushed. See `docs/publish_and_submit.md`; the included Git bundle preserves original and extension commit history. The 5–7 minute presentation outline is in `docs/presentation_outline.md`; a finished deck and a recorded walkthrough are not included.
