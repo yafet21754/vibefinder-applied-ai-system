@@ -4,6 +4,29 @@ Final project repository: https://github.com/yafet21754/vibefinder-applied-ai-sy
 
 A Python music recommendation system that turns a listener's preferences into an explainable playlist while enforcing tempo, exclusion, and artist-repetition constraints. It verifies results before releasing them and abstains when constraints leave no matches.
 
+## Website interface
+
+[Open the hosted VibeFinder interface](https://vibefinder-yafet.yafet-009.chatgpt.site) — owner-private; course reviewers can run the local Python interface below.
+
+The website has genre and mood controls, an energy slider, tempo limits, artist limits, presets, exclusion controls, score explanations, verification traces, and a text playlist download. It uses the same synthetic catalog; no audio playback is provided.
+
+Run the interface connected to the original Python engine:
+
+```bash
+python3 -m src.web
+```
+
+Open **http://127.0.0.1:8000** in your browser. The local server binds only to your device. No additional dependencies are needed. This is a development server, not a production hosting service.
+
+The hosted interface runs a JavaScript port in the browser, with no external AI service or Python process. The original Python engine remains authoritative for the course project and local interface. An automated matrix compares full browser and Python outputs across 192 requests, including strict genres, exclusions, sparse results, boundary energy values and tempo windows. Both implementations use the same catalog.
+
+```bash
+python -m pytest -q
+python scripts/check_web_parity.py
+```
+
+Website validation: **39 Python tests passed; 192/192 browser/Python comparison cases passed.** The comparison script requires Node.js; running the Python app does not.
+
 ## Original project and extension
 
 Base project: [VibeFinder 1.0 — Module 3 Music Recommender Simulation](https://github.com/yafet21754/ai110-module3show-musicrecommendersimulation-starter), commit `2ee57506bd5f88c2f6e25580284232ae88596404`.

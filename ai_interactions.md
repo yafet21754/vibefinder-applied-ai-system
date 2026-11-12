@@ -18,3 +18,6 @@ This log is a concise record of actions and design decisions, not private chain-
 
 ## Human review still needed
 The student must run a demo, inspect explanations, and complete the personal collaboration reflection in model_card.md. Assistant-run checks are not represented as student evaluation. A presentation outline is supplied; a presentation delivery has not occurred.
+
+## Website extension
+At the user's request, the assistant added a responsive website interface, local Python HTTP adapter, and browser-side JavaScript port for static hosting. Automated checks compared 192 requests across both engines; 39 Python tests passed. Browser checks exercised preset changes, track exclusion, and strict no-match handling. No student testing or listening review is claimed.

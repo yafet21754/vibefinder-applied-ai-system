@@ -31,3 +31,6 @@ The graded personal reflection requires the student's own account. Review the wo
 - Which suggestion did you reject or revise, and why? It can be a naming, scope, or simplification change you actually make.
 - What surprised you when you tested reliability yourself?
 - Which limitation or bias matters most to you, and what would you improve next?
+
+## Website interface and browser implementation
+The local website server calls the original Python system; the hosted static site uses an explicitly labeled JavaScript port. The port's outputs matched Python across 192 request cases. There are now 39 passing Python tests, including actual HTTP/API integration, invalid JSON structures, unknown fields, and cross-origin rejection. This does not prove behavior for all possible requests or establish listener satisfaction. Hosted preferences are processed on-device. The catalog remains fictional and no audio playback or music-platform connection is implied.
