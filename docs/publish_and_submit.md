@@ -1,29 +1,29 @@
-# Publish and submission checklist
+# Final submission checklist
 
-The code is prepared, but a new public final-project repository has not been created or pushed.
+Public final repository: https://github.com/yafet21754/vibefinder-applied-ai-system
 
-## Publish with preserved history
-Create an empty public repository named `vibefinder-applied-ai-system` under your GitHub account. Do not initialize a README, license, or gitignore.
+The repository preserves original Module 3 history and adds the final-system code, evaluation harness, architecture source, and actual execution evidence in meaningful commits. The original module repository is unchanged.
 
-The ZIP includes a portable `history.bundle`. In a terminal, from the extracted folder's parent directory:
+## Run your own copy
 
 ```bash
-git clone VibeFinder_Applied_AI_System/history.bundle vibefinder-applied-ai-system
+git clone https://github.com/yafet21754/vibefinder-applied-ai-system.git
 cd vibefinder-applied-ai-system
-git remote set-url origin https://github.com/yafet21754/vibefinder-applied-ai-system.git
-git push -u origin main
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install -r requirements.txt
+python -m src.app --genre lofi --mood chill --energy 0.35
+python -m src.evaluate
+python -m pytest -q
 ```
 
-The bundle includes original history and meaningful extension commits. A ZIP upload alone does not preserve that history. The original module repository is unchanged.
-
 ## Finish before submitting
-- Run the setup, demo, evaluation harness and test suite yourself.
-- Review the model card and complete the clearly labeled personal reflection using your real experience.
-- Adapt docs/presentation_outline.md into your 5–7 minute presentation.
-- Confirm the new repository is public and files and commits appear on GitHub.
+- Inspect the demo and explanations so you can explain how the system works.
+- Complete the personal reflection in model_card.md using your real experience, including an AI suggestion you accepted and one you revised or rejected.
+- Use docs/presentation_outline.md to prepare your 5–7 minute presentation.
 - Commit and push your reflection and any final changes.
-- Add the public repository link and an accurate short reflection to your portfolio.
+- Add the repository link and an accurate short reflection to your portfolio.
 - Submit the final repository URL. A Loom recording is optional.
 
 ## Portfolio reflection prompts
-Write your own short paragraph describing how you evolved a scored prototype into a constraint-aware system, how you verified its behavior, and what you learned about synthetic data and recommendation bias. Do not claim production deployment or real listener validation.
+Describe how you evolved a scored prototype into a constraint-aware system, how its behavior was verified, and what you learned about synthetic data and recommendation bias. Do not claim production deployment or real listener validation.

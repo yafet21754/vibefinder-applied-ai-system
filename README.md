@@ -1,5 +1,7 @@
 # VibeFinder 2.0 — Verified Playlist Builder
 
+Final project repository: https://github.com/yafet21754/vibefinder-applied-ai-system
+
 A Python music recommendation system that turns a listener's preferences into an explainable playlist while enforcing tempo, exclusion, and artist-repetition constraints. It verifies results before releasing them and abstains when constraints leave no matches.
 
 ## Original project and extension
@@ -326,4 +328,4 @@ Reliable recommendations require explicit definitions of success: a high matchin
 
 ## Submission status
 
-Implementation, source diagram, tests, execution evidence, and documentation are prepared locally. A public final-project repository has not been created or pushed. See `docs/publish_and_submit.md`; the included Git bundle preserves original and extension commit history. The 5–7 minute presentation outline is in `docs/presentation_outline.md`; a finished deck and a recorded walkthrough are not included.
+Implementation, source diagram, tests, execution evidence, and documentation are included in this public final-project repository. Original Module 3 history is preserved, followed by separate implementation and documentation commits. See `docs/publish_and_submit.md` for the remaining student review and submission steps. The 5–7 minute presentation outline is in `docs/presentation_outline.md`; a finished deck and a recorded walkthrough are not included. The personal-reflection prompts in `model_card.md` still require student responses before submission.
