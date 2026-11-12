@@ -1,15 +1,12 @@
-# Byte compiled
-__pycache__/
-*.py[cod]
-*.pyo
-
-# Virtual environments
 .venv/
+__pycache__/
+.pytest_cache/
+*.pyc
+*.jsonl
+*.bundle
+*.pyo
+*.pyd
 env/
 venv/
-
-# OS files
 .DS_Store
-
-# Pytest cache
-.pytest_cache/
+.env
